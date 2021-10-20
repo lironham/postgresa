@@ -1,0 +1,14 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "primary2",
+            "Group": "Servers",
+            "Host": "host.docker.internal",
+            "Port": 1111,
+            "MaintenanceDB": "postgres",
+            "Username": "testuser",
+            "SSLMode": "prefer",
+	    "PassFile": "/pgpass"
+        }
+    }
+}

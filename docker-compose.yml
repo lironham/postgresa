@@ -1,0 +1,105 @@
+---
+version: "3.3"
+
+services:
+  primary:
+    hostname: 'primary'
+    image: crunchydata/crunchy-postgres:centos8-13.4-4.7.2
+    environment:
+            #    - POSTGRES_PASSWORD=
+            #    - POSTGRES_USER=
+            #    - POSTGRES_DB=  
+    - PGHOST=/tmp
+    - MODE=postgres
+    - PG_MODE=primary
+    - PG_PRIMARY_USER=primaryuser
+    - PG_PRIMARY_PASSWORD=password
+    - PG_DATABASE=testdb
+    - PG_USER=testuser
+    - PG_PASSWORD=password
+    - PG_ROOT_PASSWORD=password
+    - PG_PRIMARY_PORT=5432
+    volumes:
+    - pg-primary-vol:/pgdata
+    ports:
+    - 1111:5432
+    networks:
+    - postgres
+      #    deploy:
+            #      placement:
+              #        constraints:
+                #        - node.labels.type == primary
+          #       - node.role == worker
+  replica:
+    image: crunchydata/crunchy-postgres:centos8-13.4-4.7.2
+    environment:
+    - MODE=postgres
+    - PGHOST=/tmp
+    - PG_MODE=replica
+    - PG_PRIMARY_HOST=primary
+    - PG_PRIMARY_PORT=5432
+    - PG_PRIMARY_USER=primaryuser
+    - PG_PRIMARY_PASSWORD=password
+    - PG_DATABASE=testdb
+    - PG_USER=testuser
+    - PG_PASSWORD=password
+    - PG_ROOT_PASSWORD=password
+    volumes:
+    - pg-replica-vol:/pgdata
+    ports:
+    - 1112:5432
+    networks:
+    - postgres
+  replica2:
+    image: crunchydata/crunchy-postgres:centos8-13.4-4.7.2
+    environment:
+    - MODE=postgres
+    - PGHOST=/tmp
+    - PG_MODE=replica
+    - PG_PRIMARY_HOST=primary
+    - PG_PRIMARY_PORT=5432
+    - PG_PRIMARY_USER=primaryuser
+    - PG_PRIMARY_PASSWORD=password
+    - PG_DATABASE=testdb
+    - PG_USER=testuser
+    - PG_PASSWORD=password
+    - PG_ROOT_PASSWORD=password
+    volumes:
+    - pg-replica2-vol:/pgdata
+    ports:
+    - 1113:5432
+    networks:
+    - postgres
+      #    deploy:
+            #      placement:
+              #        constraints:
+                #        - node.labels.type != primary
+          #        - node.role == worker
+
+
+  pgadmin:
+   # image: dpage/pgadmin4
+    image: yariny
+          # build: .
+    environment: 
+    - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+    - PGADMIN_DEFAULT_PASSWORD=admin1234
+    ports:
+    - '5050:80'
+    restart: always
+    networks:
+    - postgres   
+    links:
+    - "primary:pgsql-server" 
+    - "replica:pgsql-server2"
+    - "replica2:pgsql-server3"
+    volumes: 
+    - pgadmin:/root/.pgadmin
+networks:
+  postgres:
+
+volumes:
+  pgadmin:
+  pg-primary-vol:
+  pg-replica-vol:
+  pg-replica2-vol:
