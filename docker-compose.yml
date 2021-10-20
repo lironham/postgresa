@@ -79,8 +79,8 @@ services:
 
   pgadmin:
    # image: dpage/pgadmin4
-    image: yariny
-          # build: .
+   #image: yariny
+    build: .
     environment: 
     - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
     - PGADMIN_DEFAULT_PASSWORD=admin1234
@@ -93,7 +93,9 @@ services:
     - "primary:pgsql-server" 
     - "replica:pgsql-server2"
     - "replica2:pgsql-server3"
-    volumes: 
+    volumes:
+    - /root/interviews/yarin/postgres/servers.json:/pgadmin4/servers.json
+    - /root/interviews/yarin/postgres/pgpass:/pgpass  
     - pgadmin:/root/.pgadmin
 networks:
   postgres:
